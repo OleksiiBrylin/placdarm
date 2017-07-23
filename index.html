@@ -1,27 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Placdarm</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script>
-            console.log('start');
-            var Placdarm = (function(root){
-
-                var Placdarm = function(){}
-
-               Placdarm.prototype.draw = function(){}
-               Placdarm.prototype.draw = function(){}
-               Placdarm.prototype.draw = function(){}
-               Placdarm.prototype.draw = function(){}
-               
-               window.Placdarm = new Placdarm();
-               return window.Placdarm;
-
-              })(window);
-        </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <link href="assets/css/style.css" rel="stylesheet" type="text/css"/>
+        
     </head>
     <body>
         <div>TODO write content</div>
+        <div id="placdarm"></div>
+        <script src="assets/js/cell.js" type="text/javascript"></script>
+        <script src="assets/js/placdarm.js" type="text/javascript"></script>
+        <script>
+            console.log('start');
+            Placdarm.setBox(10);
+            Placdarm.createCells();
+        </script>
     </body>
 </html>
