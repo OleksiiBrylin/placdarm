@@ -14,8 +14,11 @@
         <script src="assets/js/placdarm.js" type="text/javascript"></script>
         <script>
             console.log('start');
-            Placdarm.setBox(10);
+            Placdarm.setSize(10);
+            Placdarm.setBox('#placdarm');
+            console.log(Placdarm.getOptions());
             Placdarm.createCells();
+            console.log(Placdarm.cells);
         </script>
     </body>
 </html>

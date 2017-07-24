@@ -1,4 +1,14 @@
 var Placdarm = (function (root, doc) {
+    
+    var division = function (val, by) {
+        return (val - val % by) / by;
+    };
+    var getMarginString = function (marginDelta) {
+        return Math.abs(marginDelta * 25) + "px";
+    };
+    var isEven = function (someNumber) {
+        return (someNumber % 2 === 0) ? true : false;
+    };
 
     var Placdarm = function (config) {
         var me = this;
@@ -24,34 +34,23 @@ var Placdarm = (function (root, doc) {
             if (y >= options.height) {
                 return false;
             }
-            
-            if (y == 0)
-                if (x > 5)
+
+            var centerHeight = division(options.height, 2);
+            if (y < centerHeight) {
+                if (x > y + centerHeight + 1) {
                     return false;
-            if (y == 1)
-                if (x > 6)
+                }
+            }
+            if (y > centerHeight) {
+                if (x < y - centerHeight) {
                     return false;
-            if (y == 2)
-                if (x > 7)
-                    return false;
-            if (y == 3)
-                if (x > 8)
-                    return false;
-            if (y == 5)
-                if (x < 1)
-                    return false;
-            if (y == 6)
-                if (x < 2)
-                    return false;
-            if (y == 7)
-                if (x < 3)
-                    return false;
-            if (y == 8)
-                if (x < 4)
-                    return false;
+                }
+            }
             return true;
         }
+
     }
+
 
     // нарисовать поле с помощью html
     // повесить события
@@ -63,24 +62,27 @@ var Placdarm = (function (root, doc) {
     Placdarm.prototype.draw = function () {}
 
     Placdarm.prototype.setSize = function (width) {
-        this.getOptions().width = (width >= 5 && width <= 10) ? width : 10;
-        this.getOptions().heigt = this.getOptions().width - 1;
+        if(!isEven(width)){
+            width++;
+        }
+        this.getOptions().width = (width >= 5 && width <= 20) ? width : 10;
+        this.getOptions().height = this.getOptions().width - 1;
     }
 
-    Placdarm.prototype.setBox = function () {
+    Placdarm.prototype.setBox = function (selector) {
+        this.getOptions().selector = selector || this.getOptions().selector;
         this.getOptions().box = doc.querySelector(this.getOptions().selector);
-        console.log(this.getOptions().box);
         if (this.getOptions().box === null) {
             throw "Error. Box has not found!";
         }
     }
 
     Placdarm.prototype.createCells = function () {
+        var marginDelta = division(this.getOptions().height, 2);
         for (var height = 0; height < this.getOptions().height; height++) {
+            var first = true;
             for (var width = 0; width < this.getOptions().width; width++) {
-                console.log(this.isCellInTheField(width, height), 'continue');
                 if (!this.isCellInTheField(width, height)) {
-
                     continue;
                 }
                 var config = {
@@ -88,9 +90,15 @@ var Placdarm = (function (root, doc) {
                     y: height
                 };
                 var cell = new Cell(config);
-                this.getOptions().box.appendChild(cell.getElement());
-                this.cells.push(cell);
+                var element = cell.getElement();
+                if (first) {
+                    element.style.marginLeft = getMarginString(marginDelta--);
+                    first = false;
+                }
+                this.getOptions().box.appendChild(element);
+                this.cells[cell.id] = cell;
             }
+            element.classList.add("last");
         }
     }
 

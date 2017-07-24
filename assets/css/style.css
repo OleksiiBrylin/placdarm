@@ -38,7 +38,7 @@ body{
     height: 398px;    
     padding-top: 8px;
     /* background: #DDFFFA; */    
-    margin-left: -100px;
+    /*margin-left: -100px;*/
 }
 #block{
     float: left;
@@ -46,10 +46,13 @@ body{
     overflow: hidden;
     height: 405px;
 }
-#placdarm .cell:nth-child(10n+1){
+/*#placdarm .cell:nth-child(10n+1){
+    clear: both;    
+}*/
+#placdarm .cell.last + .cell{    
     clear: both;    
 }
-#placdarm .cell:nth-child(1){ margin-left: 200px; }
+/*#placdarm .cell:nth-child(1){ margin-left: 200px; }
 #placdarm .cell:nth-child(11){ margin-left: 175px; }
 #placdarm .cell:nth-child(21){ margin-left: 150px; }
 #placdarm .cell:nth-child(31){  margin-left: 125px; }
@@ -57,7 +60,7 @@ body{
 #placdarm .cell:nth-child(51){ margin-left: 75px; }
 #placdarm .cell:nth-child(61){ margin-left: 50px; }
 #placdarm .cell:nth-child(71){ margin-left: 25px; }
-#placdarm .cell:nth-child(81){ margin-left: 0px; }
+#placdarm .cell:nth-child(81){ margin-left: 0px; }*/
 .cell{    
     height: 48px;
     width: 48px;

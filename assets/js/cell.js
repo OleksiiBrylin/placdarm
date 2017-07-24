@@ -5,8 +5,7 @@ var Cell = function (config) {
     
     var defaults = {
         x: null,
-        y: null,
-        id: 'cell-' + config.x + config.y,
+        y: null,        
         class: 'cell',
         html: '&nbsp;',
         htmlElement: 'div',
@@ -15,6 +14,7 @@ var Cell = function (config) {
     };
     
     this.options = Object.assign({}, defaults, config);
+    this.id = 'cell-' + this.options.x + this.options.y,
     
     this.getOptions = function () {
         return options;
@@ -23,13 +23,13 @@ var Cell = function (config) {
     this.getElement = function () {
         var element = document.createElement(me.options.htmlElement);
         element.className = me.options.class;
-        element.id = me.options.id;
+        element.id = me.id;
         element.innerHTML = me.options.html;
         me.element = element;
         return element;
     }
 
-    console.log(this.options);
+    //console.log(this.options);
 
 }
 
