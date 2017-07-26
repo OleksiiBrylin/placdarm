@@ -5,20 +5,33 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
         <link href="assets/css/style.css" rel="stylesheet" type="text/css"/>
-        
+
     </head>
     <body>
         <div>TODO write content</div>
-        <div id="placdarm"></div>
+        <div id="placdarm">
+        </div>
+        
         <script src="assets/js/cell.js" type="text/javascript"></script>
+        <script src="assets/js/pawn.js" type="text/javascript"></script>
         <script src="assets/js/placdarm.js" type="text/javascript"></script>
         <script>
             console.log('start');
-            Placdarm.setSize(10);
-            Placdarm.setBox('#placdarm');
-            console.log(Placdarm.getOptions());
-            Placdarm.createCells();
-            console.log(Placdarm.cells);
+            var fields = [5];//, 6, 8, 10, 12];
+            var placdarmField = document.getElementById('placdarm');
+            fields.forEach(function(width, index){
+                var className = 'placdarm-' + width;
+                var element = document.createElement('div');
+                element.className = className + ' table';
+                placdarmField.appendChild(element);
+                Placdarm.setSize(width);
+                Placdarm.setBox('.' + className);
+                console.log(Placdarm.getOptions());
+                Placdarm.createCells();
+                Placdarm.setPawns();
+//                console.log(Placdarm.cells); 
+            });
+            
         </script>
     </body>
 </html>

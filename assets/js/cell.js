@@ -1,32 +1,46 @@
 //;(function (root) {
 
-var Cell = function (config) {
+var Cell = function (x, y, config) {
     var me = this;
     
-    var defaults = {
-        x: null,
-        y: null,        
+    var defaults = {     
         class: 'cell',
         html: '&nbsp;',
         htmlElement: 'div',
-        state: 0,
-        pawnId: null
+        state: 0        
     };
     
     this.options = Object.assign({}, defaults, config);
-    this.id = 'cell-' + this.options.x + this.options.y,
+    this.x = x;
+    this.y = y;   
+    this.id = 'cell-' + this.x + this.y;
+    this.pawn = null;
+    this.domElement = null;
+       
     
     this.getOptions = function () {
         return options;
     };
 
-    this.getElement = function () {
-        var element = document.createElement(me.options.htmlElement);
-        element.className = me.options.class;
-        element.id = me.id;
-        element.innerHTML = me.options.html;
-        me.element = element;
-        return element;
+    this.getDomElement = function () {        
+        if(me.domElement === null){
+            var element = document.createElement(me.options.htmlElement);
+            element.className = me.options.class;
+            element.id = me.id;
+            element.innerHTML = me.options.html;
+            me.domElement = element;            
+        }
+        return me.domElement;
+    }
+    
+    this.setPawn = function(pawn){
+        me.getDomElement().classList.remove("pawn", "white", "black");
+        me.pawn = pawn || null;
+        if(me.pawn){
+            me.getDomElement().classList.add("pawn");            
+            me.getDomElement().classList.add(me.pawn.getColor());
+        }
+        
     }
 
     //console.log(this.options);
