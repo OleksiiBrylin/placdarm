@@ -114,20 +114,80 @@ var Placdarm = (function (root, doc) {
     };
 
     Placdarm.prototype.setPawns = function () {
-        for(var id in this.cells){
-            if (this.cells[id].y === 0 || this.cells[id].y === 1) {
-                var pawn = new Pawn({
-                    isWhite: true
-                });
-                this.cells[id].setPawn(pawn);
-            }
-            if (this.cells[id].y === this.getOptions().height - 1 || this.cells[id].y === this.getOptions().height - 2) {
-                var pawn = new Pawn({
-                    isWhite: false
-                });
-                this.cells[id].setPawn(pawn);
-            }
+        // перебираем все поля по ключу 
+        var maxHeigth = this.getOptions().height;
+        var maxWidth = this.getOptions().width;
+        var centerHeight = division(maxHeigth, 2);
+        var countPawns = maxWidth - centerHeight;
+        if (countPawns === 1) {
+            countPawns = 2;
         }
+        for (var height = 0; height < this.getOptions().height; height++) {
+            if (height === centerHeight) {
+                continue;
+            }
+            for (var width = 0; width < this.getOptions().width; width++) {
+                if (!this.isCellInTheField(width, height)) {
+                    continue;
+                }
+                // black 
+                if (height === 0 || height === 1) {
+                    this.setBlackPawn(width, height);
+                    continue;
+                }
+
+                //white
+                if (height === maxHeigth - 1 || height === maxHeigth - 2) {
+                    this.setWhitePawn(width, height);
+                    continue;
+                }
+
+                if (height < centerHeight) {
+                    if (width > height - 2 && width <= countPawns) {
+                        this.setBlackPawn(width, height);
+                        continue;
+                    }
+                } else {
+                    if (width > height - 3 && width <= countPawns) {
+                        this.setWhitePawn(width, height);
+                        continue;
+                    }
+                }
+
+
+//                if (width > height - 2 && width <= countPawns) {
+//                    if (height < centerHeight) {
+//
+//                    } else {
+//
+//                    }
+//                    continue;
+//                }
+            }
+            //countPawns--;
+        }
+
+//        for (var id in this.cells) {
+//            // первая линия вся 
+//            // вторая линия вся и сохраняем длину 
+//            // третья на одну меньше длины с обоих сторон
+//            // если не центр то на еще одну меньше 
+//            // если центр то конец
+//
+//            // то же самое с конца поля и до центра 
+//            if (this.cells[id].y === 0 || this.cells[id].y === 1) {
+//                var pawn = new Pawn({
+//                    isWhite: true
+//                });
+//                this.cells[id].setPawn(pawn);
+//            }
+//            if (this.cells[id].y === this.getOptions().height - 1 || this.cells[id].y === this.getOptions().height - 2) {
+//                var pawn = new Pawn({
+//                    isWhite: false
+//                });
+//                this.cells[id].setPawn(pawn);
+//            }
+//        }
 
 //        var N = Array
 //                (
@@ -142,6 +202,22 @@ var Placdarm = (function (root, doc) {
 //                        Array('w', 'w', 'w', 'w', 'w', 'w')
 //                        );
 //        return N;
+    };
+
+    Placdarm.prototype.setWhitePawn = function (width, height) {
+        var id = 'cell-' + width + height;
+        var pawn = new Pawn({
+            isWhite: true
+        });
+        this.cells[id].setPawn(pawn);
+    };
+
+    Placdarm.prototype.setBlackPawn = function (width, height) {
+        var id = 'cell-' + width + height;
+        var pawn = new Pawn({
+            isWhite: false
+        });
+        this.cells[id].setPawn(pawn);
     };
 
     Placdarm.prototype.setPlayer1 = function () {}
