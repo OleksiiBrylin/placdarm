@@ -4,8 +4,8 @@ $(document).ready(function() {
     var pole = '';
     for (var i = 0; i < 9; i++) {
         for (var j = 0; j < 10; j++) {
-            //pole += '<div class="cell" id="unit-' + i + j + '">' + i + j + '</div>';
-            pole += '<div class="cell" id="unit-' + i + j + '">&nbsp;</div>';
+            pole += '<div class="cell" id="unit-' + i + j + '">x' + j +':y'+ i + '</div>';
+//            pole += '<div class="cell" id="unit-' + i + j + '">&nbsp;</div>';
         }
     }
     $('#placdarm').append(pole);

@@ -1,5 +1,6 @@
-var Placdarm = (function (root, doc) {
-
+var Placdarm = function (config) {
+    var me = this;
+    
     var division = function (val, by) {
         return (val - val % by) / by;
     };
@@ -9,59 +10,129 @@ var Placdarm = (function (root, doc) {
 //    var isEven = function (someNumber) {
 //        return (someNumber % 2 === 0) ? true : false;
 //    };
+    var whiteMirrorX = function (centerY, x, y) {
+        var whiteX = centerY - y + x;
+        return whiteX;
+    };
+    var whiteMirrorY = function (centerY, y) {
+        var whiteY = centerY * 2 - y;
+        return whiteY;
+    }
+    var getCellsByColor = function(isWhite) {
+        var whiteCells = [];
+        for(var id in me.cells){
+            if(me.cells[id].pawn === null){
+                continue;
+            }
+            if(me.cells[id].pawn.isWhite !== isWhite){
+                continue;
+            }          
+            whiteCells.push(me.cells[id]);
+        }
+        return whiteCells;
+    };
+    var movePawn = function(element){
+        // clear selected pawns
+        // clear selected cells 
+        me.setSelected(false);
+        // clear pawns which is attacked
+        me.setAttacked(false);
+        
+        // remove bind events into attack pawns 
+        // remove bind events into move cells
+        var id = element.target.dataset.id;
+        var cell = me.cells[id];
+        cell.setSelected(true);        
+        // check where you can move and bind events and select cells
+        // move
+        cell.movementEvaluation();
+        // attack troyka
+        me.updateDomState();
+    };
+    this.selectMove = function(isWhite){
+        var cells = getCellsByColor(isWhite);
+        cells.forEach(function(cell){
+            cell.getDomElement().addEventListener("click", movePawn);
+        });
+    };
+    this.removeMove = function(isWhite){
+        var cells = getCellsByColor(isWhite);
+        cells.forEach(function(cell){
+            cell.getDomElement().removeEventListener("click", movePawn);
+        });
+    };
+    
+    this.setSelected = function (isSelected){
+        for(var id in me.cells){
+            me.cells[id].setSelected(isSelected);
+        }
+    };
+    this.setAttacked = function (isAttacked){
+        for(var id in me.cells){
+            me.cells[id].setAttacked(isAttacked);
+        }
+    };
+    this.updateDomState = function (){
+        for(var id in me.cells){
+            me.cells[id].updateDomState();
+        }
+    };
 
-    var Placdarm = function (config) {
-        var me = this;
-        var options = {
-            width: 10,
-            height: 9,
-            box: null,
-            selector: '#placdarm'
-        };
-        this.cells = [];
-
-        this.getOptions = function () {
-            return options;
-        };
-
-        this.isCellInTheField = function (x, y) {
-            if (x < 0 || y < 0) {
-                return false;
-            }
-            if (x >= options.width) {
-                return false;
-            }
-            if (y >= options.height) {
-                return false;
-            }
-
-            var centerHeight = division(options.height, 2);
-            if (y < centerHeight) {
-                if (x >= options.width - centerHeight + y) {
-                    return false;
-                }
-            }
-            if (y > centerHeight) {
-                if (x >= options.width + centerHeight - y) {
-                    return false;
-                }
-            }
-            return true;
+    var options = {
+        width: 10,
+        height: 9,
+        box: null,
+        selector: '#placdarm'
+    };
+    
+    this.cells = [];
+    this.getOptions = function () {
+        return options;
+    };
+    this.isCellInTheField = function (x, y) {
+        if (x < 0 || y < 0) {
+            return false;
+        }
+        if (x >= options.width) {
+            return false;
+        }
+        if (y >= options.height) {
+            return false;
         }
 
+        var centerHeight = division(options.height, 2);
+        if (y < centerHeight) {
+            if (x >= options.width - centerHeight + y) {
+                return false;
+            }
+        }
+        if (y > centerHeight) {
+            if (x <= y - centerHeight - 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
+// нарисовать поле с помощью html
+// повесить события
+// создать обьект поле
+// отобразить новое поле относительно массива
+// вывести дополнительные элементы
+// обработать событие Click
 
-    // нарисовать поле с помощью html
-    // повесить события
-    // создать обьект поле
-    // отобразить новое поле относительно массива
-    // вывести дополнительные элементы
-    // обработать событие Click
+    this.draw = function (width, boxSelector) {
+        this.setBox(boxSelector);
+        this.setSize(width);
+        this.createCells();
+        this.setPawns();
+        this.bindEvents();
+        var isWhiteMove = true;
+        this.selectMove(isWhiteMove);
+        this.selectMove(false)
+    }
 
-    Placdarm.prototype.draw = function () {}
-
-    Placdarm.prototype.setSize = function (width) {
+    this.setSize = function (width) {
         switch (width) {
             case 5:
                 this.getOptions().width = width;
@@ -73,7 +144,7 @@ var Placdarm = (function (root, doc) {
                 this.getOptions().width = width;
                 this.getOptions().height = 9;
                 break;
-            case 12:
+            case 13:
                 this.getOptions().width = width;
                 this.getOptions().height = 11;
                 break;
@@ -84,15 +155,15 @@ var Placdarm = (function (root, doc) {
         }
     }
 
-    Placdarm.prototype.setBox = function (selector) {
+    this.setBox = function (selector) {
         this.getOptions().selector = selector || this.getOptions().selector;
-        this.getOptions().box = doc.querySelector(this.getOptions().selector);
+        this.getOptions().box = document.querySelector(this.getOptions().selector);
         if (this.getOptions().box === null) {
             throw "Error. Box has not found!";
         }
     }
 
-    Placdarm.prototype.createCells = function () {
+    this.createCells = function () {
         var marginDelta = division(this.getOptions().height, 2);
         for (var height = 0; height < this.getOptions().height; height++) {
             var firstInRow = true;
@@ -112,119 +183,79 @@ var Placdarm = (function (root, doc) {
             element.classList.add("last");
         }
     };
-
-    Placdarm.prototype.setPawns = function () {
+    this.setPawns = function () {
         // перебираем все поля по ключу 
         var maxHeigth = this.getOptions().height;
         var maxWidth = this.getOptions().width;
-        var centerHeight = division(maxHeigth, 2);
-        var countPawns = maxWidth - centerHeight;
-        if (countPawns === 1) {
-            countPawns = 2;
-        }
-        for (var height = 0; height < this.getOptions().height; height++) {
-            if (height === centerHeight) {
-                continue;
-            }
+        var beforeCenterHeight = division(maxHeigth, 2);
+        var countPawns = maxWidth - beforeCenterHeight;
+        for (var height = 0; height < beforeCenterHeight; height++) {
             for (var width = 0; width < this.getOptions().width; width++) {
                 if (!this.isCellInTheField(width, height)) {
                     continue;
                 }
                 // black 
                 if (height === 0 || height === 1) {
-                    this.setBlackPawn(width, height);
+                    this.setBlackAndWhitePawn(width, height, beforeCenterHeight);
                     continue;
                 }
 
-                //white
-                if (height === maxHeigth - 1 || height === maxHeigth - 2) {
-                    this.setWhitePawn(width, height);
+                if (width > height - 2 && width <= countPawns) {
+                    this.setBlackAndWhitePawn(width, height, beforeCenterHeight);
                     continue;
                 }
-
-                if (height < centerHeight) {
-                    if (width > height - 2 && width <= countPawns) {
-                        this.setBlackPawn(width, height);
-                        continue;
-                    }
-                } else {
-                    if (width > height - 3 && width <= countPawns) {
-                        this.setWhitePawn(width, height);
-                        continue;
-                    }
-                }
-
-
-//                if (width > height - 2 && width <= countPawns) {
-//                    if (height < centerHeight) {
-//
-//                    } else {
-//
-//                    }
-//                    continue;
-//                }
             }
-            //countPawns--;
         }
-
-//        for (var id in this.cells) {
-//            // первая линия вся 
-//            // вторая линия вся и сохраняем длину 
-//            // третья на одну меньше длины с обоих сторон
-//            // если не центр то на еще одну меньше 
-//            // если центр то конец
-//
-//            // то же самое с конца поля и до центра 
-//            if (this.cells[id].y === 0 || this.cells[id].y === 1) {
-//                var pawn = new Pawn({
-//                    isWhite: true
-//                });
-//                this.cells[id].setPawn(pawn);
-//            }
-//            if (this.cells[id].y === this.getOptions().height - 1 || this.cells[id].y === this.getOptions().height - 2) {
-//                var pawn = new Pawn({
-//                    isWhite: false
-//                });
-//                this.cells[id].setPawn(pawn);
-//            }
-//        }
-
-//        var N = Array
-//                (
-//                        Array('b', 'b', 'b', 'b', 'b', 'b'),
-//                        Array('b', 'b', 'b', 'z', 'b', 'b', 'b'),
-//                        Array('.', 'b', 'b', 'b', 'b', 'b', 'b', '.'),
-//                        Array('.', '.', 'b', 'b', 'b', 'b', 'b', '.', '.'),
-//                        Array('.', '.', '.', '.', '.', '.', '.', '.', '.', '.'),
-//                        Array('.', '.', 'w', 'w', 'w', 'w', 'w', '.', '.'),
-//                        Array('.', 'w', 'w', 'w', 'w', 'w', 'w', '.'),
-//                        Array('w', 'w', 'w', 'q', 'w', 'w', 'w'),
-//                        Array('w', 'w', 'w', 'w', 'w', 'w')
-//                        );
-//        return N;
+        this.setBlackAndWhiteGeneral(countPawns / 2, 1, beforeCenterHeight);
     };
-
-    Placdarm.prototype.setWhitePawn = function (width, height) {
+    this.setBlackAndWhiteGeneral = function (width, height, center) {
+        var whiteWidth = whiteMirrorX(center, width, height);
+        var whiteHeight = whiteMirrorY(center, height);
+        this.setWhitePawn(whiteWidth, whiteHeight, true);
+        this.setBlackPawn(width, height, true);
+    };
+    this.setBlackAndWhitePawn = function (width, height, center) {
+        var whiteWidth = whiteMirrorX(center, width, height);
+        var whiteHeight = whiteMirrorY(center, height);
+        this.setWhitePawn(whiteWidth, whiteHeight);
+        this.setBlackPawn(width, height);
+    };
+    this.setWhitePawn = function (width, height, isGeneral) {
         var id = 'cell-' + width + height;
+        var isGeneral = isGeneral || false;
         var pawn = new Pawn({
-            isWhite: true
+            isWhite: true,
+            isGeneral: isGeneral
         });
         this.cells[id].setPawn(pawn);
     };
-
-    Placdarm.prototype.setBlackPawn = function (width, height) {
+    this.setBlackPawn = function (width, height, isGeneral) {
         var id = 'cell-' + width + height;
+        var isGeneral = isGeneral || false;
         var pawn = new Pawn({
-            isWhite: false
+            isWhite: false,
+            isGeneral: isGeneral
         });
         this.cells[id].setPawn(pawn);
     };
+    this.bindEvents = function () {
+//        $(".cell").click(function() {
+//            var str = $(this).attr('id');
+//            var x = str[6];
+//            var y = str[5];
+//            var hod = Click(M, y, x);
+//            if (hod != '0') {
+//                $('#block').css("opacity","0.5");
+//                $('#block').addClass('start');
+//                alert(hod);
+//            }
+//            Show(M);
+//        });   
+    }
+    this.setPlayer1 = function () {}
+    this.setPlayer2 = function () {}
 
-    Placdarm.prototype.setPlayer1 = function () {}
-    Placdarm.prototype.setPlayer2 = function () {}
+}
 
 
-    root.Placdarm = new Placdarm();
-    return root.Placdarm;
 
-})(window, document);

@@ -58,7 +58,7 @@ body{
     width: 48px;
     float: left;
     border-radius: 25px;
-    border: 1px solid black;
+    border: 1px solid gray;
     margin-top: -6px;
     text-align: center;
     line-height: 48px;
@@ -70,5 +70,29 @@ body{
 }
 .pawn.black{
     background: rgb(124, 111, 111);
+    border-color: gray;
+}
+.pawn.white.general{
+    background: #CEC7C7;
+    border-color: gray;
+}
+.pawn.black.general{
+    background: rgb(85, 59, 59);
+    border-color: gray;
+}
+.pawn.white.selected{
+    background: rgb(226, 225, 225);
+    border-color: gray;
+}
+.pawn.black.selected{
+    background: rgb(76, 87, 75);
+    border-color: gray;
+}
+.pawn.white.general.selected{
+    background: rgb(149, 185, 145);
+    border-color: gray;
+}
+.pawn.black.general.selected{
+    background: rgb(53, 00, 32);
     border-color: gray;
 }

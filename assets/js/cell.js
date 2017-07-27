@@ -2,46 +2,74 @@
 
 var Cell = function (x, y, config) {
     var me = this;
-    
-    var defaults = {     
+
+    var defaults = {
         class: 'cell',
         html: '&nbsp;',
         htmlElement: 'div',
-        state: 0        
+        state: 0
     };
-    
+
     this.options = Object.assign({}, defaults, config);
     this.x = x;
-    this.y = y;   
-    this.id = 'cell-' + this.x + this.y;
+    this.y = y;
+    this.id = 'cell-' + this.x + this.y;    
     this.pawn = null;
     this.domElement = null;
-       
-    
+
+
     this.getOptions = function () {
         return options;
     };
+    
+    this.updateDomState = function(){
+        if(this.pawn !== null){
+            this.pawn.updateDomState(me.getDomElement());
+        }else{
+            var pawn = new Pawn();
+            pawn.removeDomState(me.getDomElement());
+        }
+    };
+    this.setSelected = function(isSelected){
+        if (me.pawn) {
+            me.pawn.setSelected(isSelected);
+        }        
+    };
+    this.setAttacked = function(isAttacked){
+        if (me.pawn) {
+            me.pawn.setAttacked(isAttacked);
+        }
+    };
 
-    this.getDomElement = function () {        
-        if(me.domElement === null){
+    this.getDomElement = function () {
+        if (me.domElement === null) {
             var element = document.createElement(me.options.htmlElement);
             element.className = me.options.class;
-            element.id = me.id;
+            element.dataset.id = me.id;
+//            element.innerHTML = 'x' + me.x + ':y' + me.y;
             element.innerHTML = me.options.html;
-            me.domElement = element;            
+            me.domElement = element;
         }
         return me.domElement;
     }
-    
-    this.setPawn = function(pawn){
-        me.getDomElement().classList.remove("pawn", "white", "black");
+
+    this.setPawn = function (pawn) {
         me.pawn = pawn || null;
-        if(me.pawn){
-            me.getDomElement().classList.add("pawn");            
-            me.getDomElement().classList.add(me.pawn.getColor());
+        if (me.pawn) {
+            me.updateDomState();
         }
-        
-    }
+
+    };
+    this.movementEvaluation = function (){
+        moveByThird();
+//        Thrid(M, y, x); // ЧЕРЕЗ ТРИ КЛЕТКИ + КЛЮШКОЙ 
+//        Four(M, y, x); // ПО ДИАГОНАЛЯМ + КОСОЙ + УГЛОМ
+//        Fifth(M, y, x); // ПО ГОРИЗОНТАЛЯМ + УГЛОМ
+//        General(M, y, x); // ХОД ГЕНЕРАЛОМ + БОЙ ГЕНЕРАЛОМ
+    };
+    var moveByThird = function(){
+        console.log('moveByThird');
+    };
 
     //console.log(this.options);
 

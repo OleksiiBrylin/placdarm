@@ -17,19 +17,22 @@
         <script src="assets/js/placdarm.js" type="text/javascript"></script>
         <script>
             console.log('start');
-            var fields = [5, 6, 8, 10, 12];
+            var fields = [
+//                5, 6, 8, 
+                10, 
+//                13
+            ];
             var placdarmField = document.getElementById('placdarm');
-            fields.forEach(function(width, index){
+            var placdarm;
+            fields.forEach(function(width, index){                
                 var className = 'placdarm-' + width;
                 var element = document.createElement('div');
                 element.className = className + ' table';
                 placdarmField.appendChild(element);
-                Placdarm.setSize(width);
-                Placdarm.setBox('.' + className);
-                console.log(Placdarm.getOptions());
-                Placdarm.createCells();
-                Placdarm.setPawns();
-//                console.log(Placdarm.cells); 
+                
+                placdarm = new Placdarm();
+                placdarm.draw(width, '.' + className);
+//                placdarm.selectMove(true);
             });
             
         </script>
