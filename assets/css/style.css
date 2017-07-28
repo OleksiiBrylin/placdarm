@@ -58,11 +58,20 @@ body{
     width: 48px;
     float: left;
     border-radius: 25px;
+    background: white;
     border: 1px solid gray;
     margin-top: -6px;
     text-align: center;
     line-height: 48px;
-    cursor:pointer;
+    cursor: inherit;
+}
+.cell.highlighted{
+    background: rgba(45, 218, 45, 0.32);
+    border-color: green;
+}
+.cell.pawn,
+.cell.highlighted{
+    cursor: pointer;
 }
 .pawn.white{
     background: rgb(237, 252, 249);
@@ -94,5 +103,5 @@ body{
 }
 .pawn.black.general.selected{
     background: rgb(53, 00, 32);
-    border-color: gray;
+    border-color: green;
 }

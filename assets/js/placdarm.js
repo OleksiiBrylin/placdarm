@@ -1,6 +1,6 @@
 var Placdarm = function (config) {
     var me = this;
-    
+
     var division = function (val, by) {
         return (val - val % by) / by;
     };
@@ -18,62 +18,62 @@ var Placdarm = function (config) {
         var whiteY = centerY * 2 - y;
         return whiteY;
     }
-    var getCellsByColor = function(isWhite) {
-        var whiteCells = [];
-        for(var id in me.cells){
-            if(me.cells[id].pawn === null){
+    var getPawnsByColor = function (isWhite) {
+        var pawns = [];
+        for (var id in me.cells) {
+            if (me.cells[id].pawn === null) {
                 continue;
             }
-            if(me.cells[id].pawn.isWhite !== isWhite){
+            if (me.cells[id].pawn.isWhite !== isWhite) {
                 continue;
-            }          
-            whiteCells.push(me.cells[id]);
+            }
+            pawns.push(me.cells[id].pawn);
         }
-        return whiteCells;
+        return pawns;
     };
-    var movePawn = function(element){
+    var movePawn = function (element) {
         // clear selected pawns
         // clear selected cells 
         me.setSelected(false);
         // clear pawns which is attacked
         me.setAttacked(false);
-        
+
         // remove bind events into attack pawns 
         // remove bind events into move cells
         var id = element.target.dataset.id;
         var cell = me.cells[id];
-        cell.setSelected(true);        
+        cell.setSelected(true);
         // check where you can move and bind events and select cells
         // move
         cell.movementEvaluation();
         // attack troyka
         me.updateDomState();
     };
-    this.selectMove = function(isWhite){
-        var cells = getCellsByColor(isWhite);
-        cells.forEach(function(cell){
-            cell.getDomElement().addEventListener("click", movePawn);
+    this.selectMove = function (isWhite) {
+        var pawns = getPawnsByColor(isWhite);
+        pawns.forEach(function (pawn) {
+            pawn.getDomElement().addEventListener("click", movePawn);
         });
     };
-    this.removeMove = function(isWhite){
-        var cells = getCellsByColor(isWhite);
-        cells.forEach(function(cell){
-            cell.getDomElement().removeEventListener("click", movePawn);
+    this.removeMove = function (isWhite) {
+        var pawns = getPawnsByColor(isWhite);
+        pawns.forEach(function (pawn) {
+            pawn.getDomElement().removeEventListener("click", movePawn);
         });
     };
-    
-    this.setSelected = function (isSelected){
-        for(var id in me.cells){
+
+    this.setSelected = function (isSelected) {
+        for (var id in me.cells) {
             me.cells[id].setSelected(isSelected);
         }
     };
-    this.setAttacked = function (isAttacked){
-        for(var id in me.cells){
+    this.setAttacked = function (isAttacked) {
+        for (var id in me.cells) {
             me.cells[id].setAttacked(isAttacked);
         }
     };
-    this.updateDomState = function (){
-        for(var id in me.cells){
+    this.updateDomState = function () {
+        for (var id in me.cells) {
             me.cells[id].updateDomState();
         }
     };
@@ -84,7 +84,7 @@ var Placdarm = function (config) {
         box: null,
         selector: '#placdarm'
     };
-    
+
     this.cells = [];
     this.getOptions = function () {
         return options;
@@ -112,7 +112,19 @@ var Placdarm = function (config) {
             }
         }
         return true;
-    }
+    };
+    this.isEmptyCell = function (x, y) {
+        if(!this.isCellInTheField(x, y)){
+            return false;
+        }
+        if(this.getCellByXY(x, y).pawn === null){
+            return true;
+        }
+        return false;
+    };   
+    this.getCellByXY = function (x, y){
+        return this.cells['cell-' + x + y];
+    };
 
 // нарисовать поле с помощью html
 // повесить события
@@ -125,11 +137,13 @@ var Placdarm = function (config) {
         this.setBox(boxSelector);
         this.setSize(width);
         this.createCells();
-        this.setPawns();
+//        this.setPawns();
+        this.setWhitePawn(4, 4);
         this.bindEvents();
         var isWhiteMove = true;
         this.selectMove(isWhiteMove);
-        this.selectMove(false)
+        this.selectMove(false);
+        this.updateDomState();
     }
 
     this.setSize = function (width) {
@@ -171,7 +185,7 @@ var Placdarm = function (config) {
                 if (!this.isCellInTheField(width, height)) {
                     continue;
                 }
-                var cell = new Cell(width, height, {});
+                var cell = new Cell(width, height, {placdarm: me});
                 var element = cell.getDomElement();
                 if (firstInRow) {
                     element.style.marginLeft = getMarginString(marginDelta--);
@@ -206,7 +220,7 @@ var Placdarm = function (config) {
                 }
             }
         }
-        this.setBlackAndWhiteGeneral(countPawns / 2, 1, beforeCenterHeight);
+        this.setBlackAndWhiteGeneral(countPawns / 2, 1, beforeCenterHeight);        
     };
     this.setBlackAndWhiteGeneral = function (width, height, center) {
         var whiteWidth = whiteMirrorX(center, width, height);
