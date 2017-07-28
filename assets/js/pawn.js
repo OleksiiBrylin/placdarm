@@ -67,8 +67,8 @@ var Pawn = function (config) {
     };
 
     this.movementEvaluation = function () {
-        this.moveByThird();    // ЧЕРЕЗ ТРИ КЛЕТКИ 
-//        this.moveByBandy();    // КЛЮШКОЙ 
+        //this.moveByThird();    // ЧЕРЕЗ ТРИ КЛЕТКИ 
+        this.moveByBandy();    // КЛЮШКОЙ 
 //        this.moveByOblique();  // ПО ДИАГОНАЛЯМ + КОСОЙ + УГЛОМ
 //        this.moveByStraight(); // ПО ГОРИЗОНТАЛЯМ + УГЛОМ
 //        if(this.isGeneral){
@@ -88,11 +88,21 @@ var Pawn = function (config) {
     };
 
     this.moveByThird = function () {
-        this.thirdArray.forEach(function (hod, index) {
+        this.moveByMatrix(this.thirdArray);
+    };
+    this.moveByBandy = function () {
+        this.moveByMatrix(this.bandyArray);
+    };
+    this.moveByMatrix = function (matrix){
+        matrix.forEach(function (hod, index) {
             var hodLength = hod.length;
             for (var position = 0; position < hodLength; position++) {
                 if (!me.getPlacdarm().isEmptyCell(me.cell.x + hod[position].x, me.cell.y + hod[position].y)) {
                     break;
+                }
+                var cellForMove = me.getPlacdarm().getCellByXY(me.cell.x + hod[position].x, me.cell.y + hod[position].y);
+                if (cellForMove) {
+                    cellForMove.getDomElement().innerHTML += index+ ';';
                 }
                 if (hodLength - 1 === position) {
                     var cellForMove = me.getPlacdarm().getCellByXY(me.cell.x + hod[position].x, me.cell.y + hod[position].y);
@@ -103,6 +113,128 @@ var Pawn = function (config) {
             }
         });
     };
+    this.bandyArray = [
+        [
+            {x: -1, y: -1},
+            {x: -2, y: -2},
+            {x: -2, y: -3}
+        ],
+        [
+            {x: -1, y: -1},
+            {x: -1, y: -2},
+            {x: -1, y: -3}
+        ],
+        [
+            {x: 0, y: -1},
+            {x: 0, y: -2},
+            {x: -1, y: -3}
+        ],
+        [
+            {x: 0, y: -1},
+            {x: -1, y: -2},
+            {x: -2, y: -3}
+        ],
+        [
+            {x: 0, y: -1},
+            {x: 0, y: -2},
+            {x: 1, y: -2}
+        ],
+        [
+            {x: 0, y: -1},
+            {x: 1, y: -1},
+            {x: 2, y: -1}
+        ],
+        [
+            {x: 1, y: 0},
+            {x: 2, y: 0},
+            {x: 2, y: -1}
+        ],
+        [
+            {x: 1, y: 0},
+            {x: 1, y: -1},
+            {x: 1, y: -2}
+        ],        
+        [
+            {x: 1, y: 0},
+            {x: 2, y: 0},
+            {x: 3, y: 1}
+        ],
+        [
+            {x: 1, y: 0},
+            {x: 2, y: 1},
+            {x: 3, y: 2}
+        ],        
+        [
+            {x: 1, y: 1},
+            {x: 2, y: 2},
+            {x: 3, y: 2}
+        ],
+        [
+            {x: 1, y: 1},
+            {x: 2, y: 1},
+            {x: 3, y: 1}
+        ],        
+        [
+            {x: 1, y: 1},
+            {x: 2, y: 2},
+            {x: 2, y: 3}
+        ],
+        [
+            {x: 1, y: 1},
+            {x: 1, y: 2},
+            {x: 1, y: 3}
+        ],
+        [
+            {x: 0, y: 1},
+            {x: 0, y: 2},
+            {x: 1, y: 3}
+        ],
+        [
+            {x: 0, y: 1},
+            {x: 1, y: 2},
+            {x: 2, y: 3}
+        ],
+        [
+            {x: 0, y: 1},
+            {x: 0, y: 2},
+            {x: -1, y: 2}
+        ],
+        [
+            {x: 0, y: 1},
+            {x: -1, y: 1},
+            {x: -2, y: 1}
+        ],
+        [
+            {x: -1, y: 0},
+            {x: -2, y: 0},
+            {x: -2, y: 1}
+        ],
+        [
+            {x: -1, y: 0},
+            {x: -1, y: 1},
+            {x: -1, y: 2}
+        ],
+        [
+            {x: -1, y: -1},
+            {x: -2, y: -2},
+            {x: -3, y: -2}
+        ],
+        [
+            {x: -1, y: -1},
+            {x: -2, y: -1},
+            {x: -3, y: -1}
+        ],
+        [
+            {x: -1, y: 0},
+            {x: -2, y: 0},
+            {x: -3, y: -1}
+        ],
+        [
+            {x: -1, y: 0},
+            {x: -2, y: -1},
+            {x: -3, y: -2}
+        ]        
+    ];
     this.thirdArray = [
         [
             {x: -1, y: -1},
