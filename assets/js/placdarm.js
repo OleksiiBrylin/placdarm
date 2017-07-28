@@ -125,6 +125,18 @@ var Placdarm = function (config) {
     this.getCellByXY = function (x, y){
         return this.cells['cell-' + x + y];
     };
+    this.setCellStatusByXY = function (x, y, status){
+        if(!this.isEmptyCell(x, y)){
+            return false;
+        }
+        var cell = this.getCellByXY(x, y);
+        if (cell) {
+            cell.setStatus(status);
+            return true;
+        }
+        return false;
+        // TODO
+    }
 
 // нарисовать поле с помощью html
 // повесить события

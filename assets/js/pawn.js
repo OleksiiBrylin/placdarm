@@ -67,9 +67,9 @@ var Pawn = function (config) {
     };
 
     this.movementEvaluation = function () {
-        //this.moveByThird();    // ЧЕРЕЗ ТРИ КЛЕТКИ 
-        this.moveByBandy();    // КЛЮШКОЙ 
-//        this.moveByOblique();  // ПО ДИАГОНАЛЯМ + КОСОЙ + УГЛОМ
+//        this.moveByThird();    // ЧЕРЕЗ ТРИ КЛЕТКИ 
+//        this.moveByBandy();    // КЛЮШКОЙ 
+        this.moveByOblique();  // ПО ДИАГОНАЛЯМ + КОСОЙ + УГЛОМ
 //        this.moveByStraight(); // ПО ГОРИЗОНТАЛЯМ + УГЛОМ
 //        if(this.isGeneral){
 //            this.moveByGeneral(); // ХОД ГЕНЕРАЛОМ + БОЙ ГЕНЕРАЛОМ
@@ -99,29 +99,217 @@ var Pawn = function (config) {
             for (var step = 0; step < countSteps; step++) {
                 var x = me.cell.x + move[step].x;
                 var y = me.cell.y + move[step].y;
-                
+
                 if (!me.getPlacdarm().isEmptyCell(x, y)) {
                     break;
                 }
-                
-                var cellForMove = me.getPlacdarm().getCellByXY(x, y);
-                if (cellForMove) {
-                    cellForMove.getDomElement().innerHTML += i + ';';
-                }
-                
+//                
+//                var cellForMove = me.getPlacdarm().getCellByXY(x, y);
+//                if (cellForMove) {
+//                    cellForMove.getDomElement().innerHTML += i + ';';
+//                }
+
                 var isLastStep = (countSteps === step + 1) || false;
                 if (!isLastStep) {
                     continue;
                 }
-                
-                var cellForMove = me.getPlacdarm().getCellByXY(x, y);
-                if (cellForMove) {
-                    cellForMove.setStatus(true);
-                }
-                
+
+                me.getPlacdarm().setCellStatusByXY(x, y, true);
             }
         });
     };
+    this.moveByOblique = function () {
+        var matrix = [
+            {
+                x: -1, y: -1, 
+                left: {x: 1, y: -1}, 
+                right: {x: -1, y:1}
+            }
+        ];
+        matrix.forEach(function (move, i) {
+            var ix = move.x - 1, iy = move.y - 1; // в левый верхний
+            while (me.getPlacdarm().setCellStatusByXY(ix, iy, true)){
+                
+            }
+        });
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            var zx = ix + 1, zy = iy - 1; // ход углом  в верх-право
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+                zx++;
+            }
+            zx = ix - 1;
+            zy = iy + 1; // ход углом  в низ-лево
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+                zx--;
+            }
+            ix--;
+            iy--;
+        }
+        ix = x - 2; // в левый верхний по косой
+        iy = y - 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix, zy = iy - 1; // ход углом  в верх-право по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+            }
+            zx = ix;
+            zy = iy + 1; // ход углом  в низ-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+            }
+            ix -= 2;
+            iy--;
+        }
+        ix = x + 1; // в правый нижний
+        iy = y + 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix + 1, zy = iy - 1; // ход углом  в верх-право
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+                zx++;
+            }
+            zx = ix - 1;
+            zy = iy + 1; // ход углом  в низ-лево
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+                zx--;
+            }
+            ix++;
+            iy++;
+        }
+        ix = x - 1; // в левый нижний по косой
+        iy = y + 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix - 1, zy = iy - 1; // ход углом  в верх-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+                zx--;
+            }
+            zx = ix + 1;
+            zy = iy + 1; // ход углом  в низ-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+                zx++;
+            }
+            ix--;
+            iy++;
+        }
+        ix = x; // в левый верхний
+        iy = y - 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix - 2, zy = iy - 1; // ход углом  в верх-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+                zx -= 2;
+            }
+            zx = ix + 2;
+            zy = iy + 1; // ход углом  в низ-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+                zx += 2;
+            }
+
+            iy--;
+        }
+        ix = x + 1; // в правый верхний по косой
+        iy = y - 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix - 1, zy = iy - 1; // ход углом  в верх-право
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+                zx--;
+            }
+            zx = ix + 1;
+            zy = iy + 1; // ход углом  в низ-лево
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+                zx++;
+            }
+            ix++;
+            iy--;
+        }
+        ix = x; // в правый верхний
+        iy = y + 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix - 2, zy = iy - 1; // ход углом  в верх-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+                zx -= 2;
+            }
+            zx = ix + 2;
+            zy = iy + 1; // ход углом  в низ-лево по косой
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+                zx += 2;
+            }
+            iy++;
+        }
+        ix = x + 2; // в правый нижний по косой
+        iy = y + 1;
+        while (PustoePole(M, iy, ix))
+        {
+            Add(M, iy, ix, 'x');
+            zx = ix, zy = iy - 1; // ход углом  в верх-право
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy--;
+            }
+            zx = ix;
+            zy = iy + 1; // ход углом  в низ-лево
+            while (PustoePole(M, zy, zx))
+            {
+                Add(M, zy, zx, 'x');
+                zy++;
+            }
+            ix += 2;
+            iy++;
+        }
+    }
     this.bandyArray = [
         [
             {x: -1, y: -1},
