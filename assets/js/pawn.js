@@ -93,23 +93,32 @@ var Pawn = function (config) {
     this.moveByBandy = function () {
         this.moveByMatrix(this.bandyArray);
     };
-    this.moveByMatrix = function (matrix){
-        matrix.forEach(function (hod, index) {
-            var hodLength = hod.length;
-            for (var position = 0; position < hodLength; position++) {
-                if (!me.getPlacdarm().isEmptyCell(me.cell.x + hod[position].x, me.cell.y + hod[position].y)) {
+    this.moveByMatrix = function (matrix) {
+        matrix.forEach(function (move, i) {
+            var countSteps = move.length;
+            for (var step = 0; step < countSteps; step++) {
+                var x = me.cell.x + move[step].x;
+                var y = me.cell.y + move[step].y;
+                
+                if (!me.getPlacdarm().isEmptyCell(x, y)) {
                     break;
                 }
-                var cellForMove = me.getPlacdarm().getCellByXY(me.cell.x + hod[position].x, me.cell.y + hod[position].y);
+                
+                var cellForMove = me.getPlacdarm().getCellByXY(x, y);
                 if (cellForMove) {
-                    cellForMove.getDomElement().innerHTML += index+ ';';
+                    cellForMove.getDomElement().innerHTML += i + ';';
                 }
-                if (hodLength - 1 === position) {
-                    var cellForMove = me.getPlacdarm().getCellByXY(me.cell.x + hod[position].x, me.cell.y + hod[position].y);
-                    if (cellForMove) {
-                        cellForMove.setStatus(true);
-                    }
+                
+                var isLastStep = (countSteps === step + 1) || false;
+                if (!isLastStep) {
+                    continue;
                 }
+                
+                var cellForMove = me.getPlacdarm().getCellByXY(x, y);
+                if (cellForMove) {
+                    cellForMove.setStatus(true);
+                }
+                
             }
         });
     };
@@ -153,7 +162,7 @@ var Pawn = function (config) {
             {x: 1, y: 0},
             {x: 1, y: -1},
             {x: 1, y: -2}
-        ],        
+        ],
         [
             {x: 1, y: 0},
             {x: 2, y: 0},
@@ -163,7 +172,7 @@ var Pawn = function (config) {
             {x: 1, y: 0},
             {x: 2, y: 1},
             {x: 3, y: 2}
-        ],        
+        ],
         [
             {x: 1, y: 1},
             {x: 2, y: 2},
@@ -173,7 +182,7 @@ var Pawn = function (config) {
             {x: 1, y: 1},
             {x: 2, y: 1},
             {x: 3, y: 1}
-        ],        
+        ],
         [
             {x: 1, y: 1},
             {x: 2, y: 2},
@@ -233,7 +242,7 @@ var Pawn = function (config) {
             {x: -1, y: 0},
             {x: -2, y: -1},
             {x: -3, y: -2}
-        ]        
+        ]
     ];
     this.thirdArray = [
         [
