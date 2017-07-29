@@ -30,35 +30,39 @@ var Placdarm = function (config) {
             pawns.push(me.cells[id].pawn);
         }
         return pawns;
-    };
-    var movePawn = function (element) {
-        // clear selected pawns
-        // clear selected cells 
-        me.setSelected(false);
-        // clear pawns which is attacked
-        me.setAttacked(false);
-
-        // remove bind events into attack pawns 
-        // remove bind events into move cells
-        var id = element.target.dataset.id;
-        var cell = me.cells[id];
-        cell.setSelected(true);
-        // check where you can move and bind events and select cells
-        // move
-        cell.movementEvaluation();
-        // attack troyka
-        me.updateDomState();
-    };
-    this.selectMove = function (isWhite) {
+    }; 
+    var getCellsByState = function (state) {
+        var cells = [];
+        for (var id in me.cells) {
+            if (me.cells[id].state !== state) {
+                continue;
+            }
+            cells.push(me.cells[id]);
+        }
+        return cells;
+    }; 
+    this.bindEventMove = function (isWhite) {
         var pawns = getPawnsByColor(isWhite);
         pawns.forEach(function (pawn) {
-            pawn.getDomElement().addEventListener("click", movePawn);
+            pawn.getDomElement().addEventListener("click", pawn.move);
         });
     };
-    this.removeMove = function (isWhite) {
+    this.removeEventMove = function (isWhite) {
         var pawns = getPawnsByColor(isWhite);
         pawns.forEach(function (pawn) {
-            pawn.getDomElement().removeEventListener("click", movePawn);
+            pawn.getDomElement().removeEventListener("click", pawn.move);
+        });
+    };
+    this.bindEventMoveOnIt = function (pawn) {
+        var cells = getCellsByState(true);
+        cells.forEach(function (cell) {
+            cell.getDomElement().addEventListener("click", cell.moveOnIt);
+        });
+    };
+    this.removeEventMoveOnIt = function () {
+        var cells = getCellsByState(true);
+        cells.forEach(function (cell) {
+            cell.getDomElement().removeEventListener("click", cell.moveOnIt);
         });
     };
 
@@ -76,6 +80,9 @@ var Placdarm = function (config) {
         for (var id in me.cells) {
             me.cells[id].updateDomState();
         }
+        var isWhiteMove = true;
+        this.bindEventMove(isWhiteMove);
+        this.bindEventMove(false);
     };
 
     var options = {
@@ -135,8 +142,7 @@ var Placdarm = function (config) {
             return true;
         }
         return false;
-        // TODO
-    }
+    };
 
 // нарисовать поле с помощью html
 // повесить события
@@ -149,12 +155,9 @@ var Placdarm = function (config) {
         this.setBox(boxSelector);
         this.setSize(width);
         this.createCells();
-//        this.setPawns();
-        this.setWhitePawn(4, 4);
-        this.bindEvents();
-        var isWhiteMove = true;
-        this.selectMove(isWhiteMove);
-        this.selectMove(false);
+        this.setPawns();
+//        this.setWhitePawn(4, 4);
+        this.bindEvents();       
         this.updateDomState();
     }
 

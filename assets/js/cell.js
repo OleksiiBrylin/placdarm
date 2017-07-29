@@ -48,8 +48,8 @@ var Cell = function (x, y, config) {
             me.pawn.setAttacked(isAttacked);
         }
     };
-    this.setStatus = function (isStatus) {
-        this.state = isStatus;
+    this.setStatus = function (state) {
+        this.state = state;
     };
 
     this.getDomElement = function () {
@@ -62,18 +62,20 @@ var Cell = function (x, y, config) {
             me.domElement = element;
         }
         return me.domElement;
-    }
+    };
 
     this.setPawn = function (pawn) {
         me.pawn = pawn || null;
         if (me.pawn) {
             pawn.cell = me;
         }
-
     };
-    this.movementEvaluation = function () {
-        if (me.pawn) {
-            me.pawn.movementEvaluation();
-        }
-    };
+    this.moveOnIt = function(event){
+        console.log('moveOnIt', me, event);
+//        var pawn = me.placdarm.getSelectedPawn();
+        // swap cell on it
+        // drop other selected and status
+        // finish move - remove all listeners
+        // set new listeners on opositive pawns
+    }
 };
