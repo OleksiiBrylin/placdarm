@@ -70,12 +70,17 @@ var Cell = function (x, y, config) {
             pawn.cell = me;
         }
     };
+    this.movePawnToThisCell = function(pawn){
+        console.log(pawn);
+        pawn.cell.setPawn(null);
+        me.setPawn(pawn);
+        console.log(pawn, 2);
+    };
     this.moveOnIt = function(event){
-        console.log('moveOnIt', me, event);
-//        var pawn = me.placdarm.getSelectedPawn();
-        // swap cell on it
-        // drop other selected and status
-        // finish move - remove all listeners
-        // set new listeners on opositive pawns
-    }
+        var pawn = me.placdarm.getSelectedPawn();
+        me.placdarm.finishMove(pawn.isWhite);
+        me.movePawnToThisCell(pawn);
+        me.placdarm.updateDomState();
+        
+    };
 };

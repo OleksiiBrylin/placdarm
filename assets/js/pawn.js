@@ -18,6 +18,7 @@ var Pawn = function (config) {
     this.isAttacked = this.options.isAttacked;
     this.cell = this.options.cell;
     this.placdarm = this.options.placdarm;
+    this.isFigura = false;
 
     this.getOptions = function () {
         return options;
@@ -67,24 +68,18 @@ var Pawn = function (config) {
     };
 
     this.move = function (element) {
-        console.log(me);
+        console.log('move Pawn', me);
         // remove bind events into attack pawns 
         // remove bind events into move cells
-        me.getPlacdarm().removeEventMoveOnIt();
-        
-        // clear selected pawns
-        // clear selected cells 
-        me.getPlacdarm().setSelected(false);
-        // clear pawns which is attacked
-        me.getPlacdarm().setAttacked(false);
-
-        
+        me.getPlacdarm().removeAllSelected();
 
         me.setSelected(true);
         // check where you can move and bind events and select cells
         // move
         me.movementEvaluation();
         // attack troyka
+        me.attackEvaluation();
+
         me.getPlacdarm().updateDomState();
         me.getPlacdarm().bindEventMoveOnIt();
     };
@@ -97,7 +92,15 @@ var Pawn = function (config) {
         this.moveBetwenCells(); // МЕЖДУ ПОЛЕЙ + углом
         if (this.isGeneral) {
             this.moveByGeneral(); // ХОД ГЕНЕРАЛОМ + БОЙ ГЕНЕРАЛОМ
-        } 
+        }
+    };
+    this.attackEvaluation = function () {
+        if (this.isGeneral) {
+            this.attackByGeneral();
+        }
+        if (this.isFigura) {
+            this.attackByFigura();
+        }
     };
 
     this.getPlacdarm = function () {
@@ -176,19 +179,60 @@ var Pawn = function (config) {
         });
     };
     this.moveByGeneral = function () {
-        this.generalArray.forEach(function (move, i) {
+        var matrix = this.generalArray.concat(this.aroundArray);
+        matrix.forEach(function (move, i) {
             var x = me.cell.x + move.x;
             var y = me.cell.y + move.y;
             me.getPlacdarm().setCellStatusByXY(x, y, true);
         });
     };
-    this.generalArray = [
+    this.attackByGeneral = function () {
+        // for each this.aroundArray array
+        if (this.isCanAttackByGeneral(-1, -1)) {
+            VudelenieFiguruBoy(M, y - 1, x - 1); // проверяет ВОЗМОЖНОСТЬ ПОБИТЬ генералом и выделяет жертву
+        }
+    };
+    this.attackByFigura = function () {
+
+    };
+    this.isCanAttackByGeneral = function (x, y) {
+        var cell = me.getPlacdarm().getCellByXY(x, y);
+        if (!cell && cell.pawn === null) {
+            return false;
+        }
+        if (cell.pawn.isWhite === me.isWhite) {
+            return false;
+        }
+        
+        var countSimilar = function(count){
+            
+        };
+        
+        if (KolvoElemGeneral(M, y + ky, x + kx)) {
+            if (Troyka(M, y, x))
+            {
+                if (ProverkaTroykaSamovos(M, y, x, y + ky, x + kx))
+                    return false; // фигура не больше двух, в проверке на тройку не нуждается  
+            } else
+                return true;
+        }
+
+    };
+    this.aroundArray = [
         {x: -1, y: -1},
         {x: 0, y: -1},
         {x: 1, y: 0},
         {x: 1, y: 1},
         {x: 0, y: 1},
         {x: -1, y: 0}
+    ];
+    this.generalArray = [        
+        {x: -2, y: -2},
+        {x: 0, y: -2},
+        {x: 2, y: 0},
+        {x: 2, y: 2},
+        {x: 0, y: 2},
+        {x: -2, y: 0}
     ];
     this.straightMatrix = {
         firstSteps: [

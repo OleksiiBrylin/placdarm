@@ -69,7 +69,8 @@ body{
     background: rgba(45, 218, 45, 0.32);
     border-color: green;
 }
-.cell.pawn,
+.table.white .cell.pawn.white,
+.table.black .cell.pawn.black,
 .cell.highlighted{
     cursor: pointer;
 }

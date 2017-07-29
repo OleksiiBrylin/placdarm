@@ -30,7 +30,7 @@ var Placdarm = function (config) {
             pawns.push(me.cells[id].pawn);
         }
         return pawns;
-    }; 
+    };
     var getCellsByState = function (state) {
         var cells = [];
         for (var id in me.cells) {
@@ -40,7 +40,18 @@ var Placdarm = function (config) {
             cells.push(me.cells[id]);
         }
         return cells;
-    }; 
+    };
+    this.getSelectedPawn = function () {
+        for (var id in me.cells) {
+            if (me.cells[id].pawn === null) {
+                continue;
+            }
+            if (me.cells[id].pawn.isSelected === true) {
+                return me.cells[id].pawn;
+            }
+        }
+        return false;
+    }
     this.bindEventMove = function (isWhite) {
         var pawns = getPawnsByColor(isWhite);
         pawns.forEach(function (pawn) {
@@ -80,19 +91,26 @@ var Placdarm = function (config) {
         for (var id in me.cells) {
             me.cells[id].updateDomState();
         }
-        var isWhiteMove = true;
-        this.bindEventMove(isWhiteMove);
-        this.bindEventMove(false);
+        if (this.isMoveWhite) {
+            this.getOptions().box.classList.add("white");
+            this.getOptions().box.classList.remove("black");
+        } else {
+            this.getOptions().box.classList.add("black");
+            this.getOptions().box.classList.remove("white");
+        }
     };
 
     var options = {
         width: 10,
         height: 9,
         box: null,
-        selector: '#placdarm'
+        selector: '#placdarm',
+        isMoveWhite: true
     };
 
     this.cells = [];
+    this.isMoveWhite = true;
+    
     this.getOptions = function () {
         return options;
     };
@@ -121,19 +139,19 @@ var Placdarm = function (config) {
         return true;
     };
     this.isEmptyCell = function (x, y) {
-        if(!this.isCellInTheField(x, y)){
+        if (!this.isCellInTheField(x, y)) {
             return false;
         }
-        if(this.getCellByXY(x, y).pawn === null){
+        if (this.getCellByXY(x, y).pawn === null) {
             return true;
         }
         return false;
-    };   
-    this.getCellByXY = function (x, y){
+    };
+    this.getCellByXY = function (x, y) {
         return this.cells['cell-' + x + y];
     };
-    this.setCellStatusByXY = function (x, y, status){
-        if(!this.isEmptyCell(x, y)){
+    this.setCellStatusByXY = function (x, y, status) {
+        if (!this.isEmptyCell(x, y)) {
             return false;
         }
         var cell = this.getCellByXY(x, y);
@@ -157,9 +175,10 @@ var Placdarm = function (config) {
         this.createCells();
         this.setPawns();
 //        this.setWhitePawn(4, 4);
-        this.bindEvents();       
+        var isWhiteMove = true;
+        this.bindEventMove(isWhiteMove);
         this.updateDomState();
-    }
+    };
 
     this.setSize = function (width) {
         switch (width) {
@@ -182,7 +201,7 @@ var Placdarm = function (config) {
                 this.getOptions().height = 9;
                 break;
         }
-    }
+    };
 
     this.setBox = function (selector) {
         this.getOptions().selector = selector || this.getOptions().selector;
@@ -190,7 +209,7 @@ var Placdarm = function (config) {
         if (this.getOptions().box === null) {
             throw "Error. Box has not found!";
         }
-    }
+    };
 
     this.createCells = function () {
         var marginDelta = division(this.getOptions().height, 2);
@@ -235,7 +254,7 @@ var Placdarm = function (config) {
                 }
             }
         }
-        this.setBlackAndWhiteGeneral(countPawns / 2, 1, beforeCenterHeight);        
+        this.setBlackAndWhiteGeneral(countPawns / 2, 1, beforeCenterHeight);
     };
     this.setBlackAndWhiteGeneral = function (width, height, center) {
         var whiteWidth = whiteMirrorX(center, width, height);
@@ -267,24 +286,23 @@ var Placdarm = function (config) {
         });
         this.cells[id].setPawn(pawn);
     };
-    this.bindEvents = function () {
-//        $(".cell").click(function() {
-//            var str = $(this).attr('id');
-//            var x = str[6];
-//            var y = str[5];
-//            var hod = Click(M, y, x);
-//            if (hod != '0') {
-//                $('#block').css("opacity","0.5");
-//                $('#block').addClass('start');
-//                alert(hod);
-//            }
-//            Show(M);
-//        });   
-    }
-    this.setPlayer1 = function () {}
-    this.setPlayer2 = function () {}
+    this.finishMove = function (isWhite) {
+        this.removeAllSelected();
+        this.removeEventMove(isWhite);        
+        this.bindEventMove(!isWhite);        
+        this.isMoveWhite = !isWhite;
+        // drop other selected and status
+        // finish move - remove all listeners
+        // set new listeners on opositive pawns
+    };
 
-}
+    this.removeAllSelected = function () {
+        this.removeEventMoveOnIt();
+        // clear selected pawns
+        // clear selected cells 
+        this.setSelected(false);
+        // clear pawns which is attacked
+        this.setAttacked(false);
+    };
 
-
-
+};
