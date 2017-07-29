@@ -196,16 +196,17 @@ var Pawn = function (config) {
 
     };
     this.isCanAttackByGeneral = function (x, y) {
-        var cell = me.getPlacdarm().getCellByXY(x, y);
-        if (!cell && cell.pawn === null) {
-            return false;
-        }
-        if (cell.pawn.isWhite === me.isWhite) {
+        if (me.getPlacdarm().isCellByXYEnemy(x, y, me)) {
             return false;
         }
         
-        var countSimilar = function(count){
-            
+        var countSimilar = function(x, y, arr, count){
+            arr.forEach(function (cellXY) {
+                if(me.getPlacdarm().isCellByXYEnemy(cellXY.x, cellXY.y, me)){
+                    count++;
+                    countSimilar(x, y, arr, count);
+                }
+            });
         };
         
         if (KolvoElemGeneral(M, y + ky, x + kx)) {

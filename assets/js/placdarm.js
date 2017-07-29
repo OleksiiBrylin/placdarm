@@ -161,6 +161,16 @@ var Placdarm = function (config) {
         }
         return false;
     };
+    this.isCellByXYEnemy = function (x, y, pawn){
+        var cell = this.getCellByXY(x, y);
+        if (!cell && cell.pawn === null) {
+            return false;
+        }
+        if (cell.pawn.isWhite === pawn.isWhite) {
+            return false;
+        }
+        return true;
+    };
 
 // нарисовать поле с помощью html
 // повесить события
