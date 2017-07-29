@@ -187,38 +187,48 @@ var Pawn = function (config) {
         });
     };
     this.attackByGeneral = function () {
-        // for each this.aroundArray array
-        if (this.isCanAttackByGeneral(-1, -1)) {
-            VudelenieFiguruBoy(M, y - 1, x - 1); // проверяет ВОЗМОЖНОСТЬ ПОБИТЬ генералом и выделяет жертву
-        }
+        var enemyCells = [];
+        var maxCount = 2;
+        var matrix = me.aroundArray;
+        for(var step = 0; step < matrix.length; step++){
+            var x = me.cell.x + matrix[step].x;
+            var y = me.cell.y + matrix[step].y;
+            var neighborCell = me.getPlacdarm().getCellByXY(x, y);
+            if (me.isPawnsEnemy(neighborCell.pawn, me.cell.pawn)) {
+                enemyCells.push(neighborCell);
+            }
+        }  
+        var canBeAttackedCells = countEnemyAround(enemyCells, maxCount, matrix);
+
+        var countEnemyAround = function (enemyCells, maxCount, matrix) {
+            enemyCells.forEach(function (cell, index) {
+                for(var step = 0; step < matrix.length; step++){
+                    var x = cell.x + matrix[step].x;
+                    var y = cell.y + matrix[step].y;
+                    var neighborCell = me.getPlacdarm().getCellByXY(x, y);
+                    if (me.getPlacdarm().isPawnsSimilar(cell, neighborCell)) {
+                        /// todo enemyCells.push(neighborCell);
+                        if (enemyCells.lenght > maxCount) {
+                            return false;
+                        }
+                        return countEnemyAround(enemyCells, maxCount, matrix);
+                    }
+                }
+            });
+        };
     };
     this.attackByFigura = function () {
 
     };
-    this.isCanAttackByGeneral = function (x, y) {
-        if (me.getPlacdarm().isCellByXYEnemy(x, y, me)) {
+    this.isPawnsEnemy = function (pawn1, pawn2) {
+        if (pawn1 === null || pawn2 === null) {
             return false;
         }
-        
-        var countSimilar = function(x, y, arr, count){
-            arr.forEach(function (cellXY) {
-                if(me.getPlacdarm().isCellByXYEnemy(cellXY.x, cellXY.y, me)){
-                    count++;
-                    countSimilar(x, y, arr, count);
-                }
-            });
-        };
-        
-        if (KolvoElemGeneral(M, y + ky, x + kx)) {
-            if (Troyka(M, y, x))
-            {
-                if (ProverkaTroykaSamovos(M, y, x, y + ky, x + kx))
-                    return false; // фигура не больше двух, в проверке на тройку не нуждается  
-            } else
-                return true;
+        if (pawn1.isWhite === pawn2.isWhite) {
+            return false;
         }
-
-    };
+        return true;
+    };    
     this.aroundArray = [
         {x: -1, y: -1},
         {x: 0, y: -1},
@@ -227,7 +237,7 @@ var Pawn = function (config) {
         {x: 0, y: 1},
         {x: -1, y: 0}
     ];
-    this.generalArray = [        
+    this.generalArray = [
         {x: -2, y: -2},
         {x: 0, y: -2},
         {x: 2, y: 0},
